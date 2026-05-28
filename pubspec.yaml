@@ -1,0 +1,15 @@
+name: focus_timer
+description: Pomodoro timer with themes and AdMob monetization.
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  #google_mobile_ads: ^5.1.0
+  flutter_local_notifications: ^17.2.2
+
+flutter:
+  uses-material-design: true
