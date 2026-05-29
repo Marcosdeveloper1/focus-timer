@@ -27,17 +27,26 @@ android {
         versionName = flutter.versionName
     }
 
-    buildTypes {
-        release {
-            signingConfig = signingConfigs.getByName("debug")
+    signingConfigs {
+        create("release") {
+            keyAlias = System.getenv("KEY_ALIAS")
+            keyPassword = System.getenv("KEY_PASSWORD")
+            storeFile = file("focus-timer.jks")
+            storePassword = System.getenv("STORE_PASSWORD")
         }
     }
-}
 
-flutter {
-    source = "../.."
-}
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("release") // ✅ CORRETO
+        }
+    }
 
-dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    flutter {
+        source = "../.."
+    }
+
+    dependencies {
+        coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    }
 }
