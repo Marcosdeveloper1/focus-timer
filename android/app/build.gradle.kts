@@ -1,13 +1,16 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-val keyProperties = java.util.Properties()
+val keyProperties = Properties()
 val keyPropertiesFile = rootProject.file("key.properties")
 if (keyPropertiesFile.exists()) {
-    keyProperties.load(keyPropertiesFile.inputStream())
+    keyProperties.load(FileInputStream(keyPropertiesFile))
 }
 
 android {
