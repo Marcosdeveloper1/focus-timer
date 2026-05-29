@@ -21,16 +21,14 @@ jobs:
 
       - name: Instalar Flutter
         uses: subosito/flutter-action@v2
-        id: flutter
         with:
           flutter-version: '3.27.4'
           channel: 'stable'
 
       - name: Criar local.properties
         run: |
-          echo "flutter.sdk=${{ steps.flutter.outputs.flutter-sdk }}" > android/local.properties
+          echo "flutter.sdk=$(which flutter | sed 's|/bin/flutter||')" > android/local.properties
           echo "sdk.dir=$ANDROID_SDK_ROOT" >> android/local.properties
-          echo "FLUTTER_ROOT=${{ steps.flutter.outputs.flutter-sdk }}" >> $GITHUB_ENV
 
       - name: Instalar dependências
         run: flutter pub get
@@ -38,16 +36,6 @@ jobs:
       - name: Criar keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/focus-timer.jks
-
-      - name: Debug estrutura
-        run: |
-          echo "=== Raiz ==="
-          ls -la
-          echo "=== Android ==="
-          ls -la android/
-          echo "=== Flutter SDK ==="
-          echo $FLUTTER_ROOT
-          flutter --version
 
       - name: Build APK release (assinado)
         run: |
