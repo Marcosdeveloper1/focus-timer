@@ -28,11 +28,28 @@ jobs:
       - name: Instalar dependências
         run: flutter pub get
 
-      - name: Build APK (para testar no celular)
-        run: flutter build apk --release --no-tree-shake-icons
+      - name: Criar keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/focus-timer.jks
 
-      - name: Build AAB (para Play Store)
-        run: flutter build appbundle --release --no-tree-shake-icons
+      - name: Build APK release (assinado)
+        run: |
+          flutter build apk --release --no-tree-shake-icons \
+            --dart-define=FLUTTER_BUILD_NUMBER=1
+        env:
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          STORE_FILE: focus-timer.jks
+
+      - name: Build AAB release (assinado)
+        run: |
+          flutter build appbundle --release --no-tree-shake-icons
+        env:
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          STORE_FILE: focus-timer.jks
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
