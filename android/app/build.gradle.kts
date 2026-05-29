@@ -4,6 +4,12 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val keyProperties = java.util.Properties()
+val keyPropertiesFile = rootProject.file("key.properties")
+if (keyPropertiesFile.exists()) {
+    keyProperties.load(keyPropertiesFile.inputStream())
+}
+
 android {
     namespace = "com.fala.geek"
     compileSdk = flutter.compileSdkVersion
@@ -29,24 +35,24 @@ android {
 
     signingConfigs {
         create("release") {
-            keyAlias = System.getenv("KEY_ALIAS")
-            keyPassword = System.getenv("KEY_PASSWORD")
-            storeFile = file("focus-timer.jks")
-            storePassword = System.getenv("STORE_PASSWORD")
+            keyAlias = keyProperties["keyAlias"] as String
+            keyPassword = keyProperties["keyPassword"] as String
+            storeFile = file(keyProperties["storeFile"] as String)
+            storePassword = keyProperties["storePassword"] as String
         }
     }
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release") // ✅ CORRETO
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
     flutter {
         source = "../.."
     }
+}
 
-    dependencies {
-        coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
-    }
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }
