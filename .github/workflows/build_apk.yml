@@ -46,29 +46,31 @@ jobs:
 
       - name: Build APK release (assinado)
         run: |
-          flutter build apk --release --no-tree-shake-icons \
-            --dart-define=FLUTTER_BUILD_NUMBER=1
+          cd android
+          ./gradlew assembleRelease
 
       - name: Listar arquivos gerados
         if: always()
         run: |
           echo "=== Outputs ==="
-          find build/app/outputs -type f 2>/dev/null || echo "Nenhum arquivo encontrado"
+          find . -name "*.apk" 2>/dev/null
+          find . -name "*.aab" 2>/dev/null
 
       - name: Build AAB release (assinado)
         run: |
-          flutter build appbundle --release --no-tree-shake-icons
+          cd android
+          ./gradlew bundleRelease
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: focus-timer-apk
-          path: build/app/outputs/apk/release/app-release.apk
+          path: android/app/build/outputs/apk/release/app-release.apk
           retention-days: 7
 
       - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
           name: focus-timer-aab
-          path: build/app/outputs/bundle/release/app-release.aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
           retention-days: 7
