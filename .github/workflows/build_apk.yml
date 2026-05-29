@@ -1,3 +1,13 @@
+- name: Debug estrutura
+  run: |
+    echo "=== Raiz ==="
+    ls -la
+    echo "=== Android ==="
+    ls -la android/
+    echo "=== Flutter SDK ==="
+    echo $FLUTTER_ROOT
+    flutter --version
+
 name: Build Flutter APK + AAB
 
 on:
