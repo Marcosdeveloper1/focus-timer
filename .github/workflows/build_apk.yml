@@ -1,13 +1,3 @@
-- name: Debug estrutura
-  run: |
-    echo "=== Raiz ==="
-    ls -la
-    echo "=== Android ==="
-    ls -la android/
-    echo "=== Flutter SDK ==="
-    echo $FLUTTER_ROOT
-    flutter --version
-
 name: Build Flutter APK + AAB
 
 on:
@@ -48,6 +38,16 @@ jobs:
       - name: Criar keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/focus-timer.jks
+
+      - name: Debug estrutura
+        run: |
+          echo "=== Raiz ==="
+          ls -la
+          echo "=== Android ==="
+          ls -la android/
+          echo "=== Flutter SDK ==="
+          echo $FLUTTER_ROOT
+          flutter --version
 
       - name: Build APK release (assinado)
         run: |
