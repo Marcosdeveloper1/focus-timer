@@ -21,9 +21,15 @@ jobs:
 
       - name: Instalar Flutter
         uses: subosito/flutter-action@v2
+        id: flutter
         with:
           flutter-version: '3.27.4'
           channel: 'stable'
+
+      - name: Criar local.properties
+        run: |
+          echo "flutter.sdk=${{ steps.flutter.outputs.flutter-sdk }}" > android/local.properties
+          echo "sdk.dir=$ANDROID_SDK_ROOT" >> android/local.properties
 
       - name: Instalar dependências
         run: flutter pub get
