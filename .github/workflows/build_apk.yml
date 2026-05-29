@@ -44,6 +44,9 @@ jobs:
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
           echo "storeFile=focus-timer.jks" >> android/key.properties
 
+      - name: Permissão gradlew
+        run: chmod +x android/gradlew
+
       - name: Build APK release (assinado)
         run: |
           cd android
