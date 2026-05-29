@@ -30,6 +30,7 @@ jobs:
         run: |
           echo "flutter.sdk=${{ steps.flutter.outputs.flutter-sdk }}" > android/local.properties
           echo "sdk.dir=$ANDROID_SDK_ROOT" >> android/local.properties
+          echo "FLUTTER_ROOT=${{ steps.flutter.outputs.flutter-sdk }}" >> $GITHUB_ENV
 
       - name: Instalar dependências
         run: flutter pub get
