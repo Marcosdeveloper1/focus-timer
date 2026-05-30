@@ -1,76 +1,65 @@
 name: Build Flutter APK + AAB
-
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout código
         uses: actions/checkout@v4
-
       - name: Instalar Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-
       - name: Instalar Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.27.4'
           channel: 'stable'
-
       - name: Criar local.properties
         run: |
           echo "flutter.sdk=$(which flutter | sed 's|/bin/flutter||')" > android/local.properties
           echo "sdk.dir=$ANDROID_SDK_ROOT" >> android/local.properties
-
       - name: Instalar dependências
         run: flutter pub get
-
       - name: Criar keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/focus-timer.jks
-
       - name: Criar key.properties
         run: |
           echo "storePassword=${{ secrets.STORE_PASSWORD }}" > android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
           echo "storeFile=focus-timer.jks" >> android/key.properties
-
       - name: Permissão gradlew
         run: chmod +x android/gradlew
-
+      - name: Limpar build anterior
+        run: |
+          cd android
+          ./gradlew clean
       - name: Build APK release (assinado)
         run: |
           cd android
           ./gradlew assembleRelease
-
       - name: Listar arquivos gerados
         if: always()
         run: |
           echo "=== Outputs ==="
           find . -name "*.apk" 2>/dev/null
           find . -name "*.aab" 2>/dev/null
-
       - name: Build AAB release (assinado)
         run: |
           cd android
           ./gradlew bundleRelease
-
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: focus-timer-apk
           path: android/app/build/outputs/apk/release/app-release.apk
           retention-days: 7
-
       - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
