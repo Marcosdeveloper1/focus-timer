@@ -54,11 +54,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: focus-timer-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: android/app/build/outputs/flutter-apk/app-release.apk
           retention-days: 7
       - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
           name: focus-timer-aab
-          path: build/app/outputs/bundle/release/app-release.aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
           retention-days: 7
