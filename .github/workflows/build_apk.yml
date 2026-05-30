@@ -33,7 +33,7 @@ jobs:
           echo "storePassword=${{ secrets.STORE_PASSWORD }}" > android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-          echo "storeFile=focus-timer.jks" >> android/key.properties
+          echo "storeFile=$(pwd)/android/app/focus-timer.jks" >> android/key.properties
       - name: Permissão gradlew
         run: chmod +x android/gradlew
       - name: Limpar build anterior
