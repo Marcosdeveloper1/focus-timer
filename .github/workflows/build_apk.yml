@@ -30,10 +30,13 @@ jobs:
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/focus-timer.jks
       - name: Criar key.properties
         run: |
+          KEYSTORE_PATH="$GITHUB_WORKSPACE/android/app/focus-timer.jks"
           echo "storePassword=${{ secrets.STORE_PASSWORD }}" > android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-          echo "storeFile=$(pwd)/android/app/focus-timer.jks" >> android/key.properties
+          echo "storeFile=$KEYSTORE_PATH" >> android/key.properties
+          echo "=== key.properties ==="
+          cat android/key.properties
       - name: Permissão gradlew
         run: chmod +x android/gradlew
       - name: Limpar build anterior
