@@ -1,0 +1,2 @@
+C:/Users/Levi/Downloads/PomodoroFocus/focus-timer/android/app/.cxx/release/1e5e1a5v/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/Levi/Downloads/PomodoroFocus/focus-timer/android/app/.cxx/release/1e5e1a5v/armeabi-v7a/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,20 @@
+# Flutter
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+
+# Android build
+android/.gradle/
+android/app/build/
+android/.kotlin/
+
+# Keystore (NUNCA commitar!)
+android/app/focus-timer.jks
+android/app/keystore_base64.txt
+key.properties
+
+# Screenshots e arquivos locais
+Screenshot_*
+*.lock
