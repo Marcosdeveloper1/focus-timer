@@ -1,0 +1,3 @@
+-keep class io.flutter.** { *; }
+-keep class com.fala.geek.focustimer.** { *; }
+-dontwarn io.flutter.**
