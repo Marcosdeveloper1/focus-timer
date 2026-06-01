@@ -12,30 +12,22 @@ void main() async {
   runApp(const PomodoroApp());
 }
 
-// ─── AD IDs ───────────────────────────────────────────────────────────────────
-
 class AdIds {
   static const String banner = 'ca-app-pub-6589272823210777/7656775535';
   static const String rewarded = 'ca-app-pub-6589272823210777/2623940708';
 }
 
-// ─── NOTIFICATION SERVICE ─────────────────────────────────────────────────────
-
 class NotificationService {
   NotificationService._();
   static final NotificationService instance = NotificationService._();
-  final FlutterLocalNotificationsPlugin _plugin =
-      FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
 
   Future<void> init() async {
-    const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-    await _plugin
-        .initialize(const InitializationSettings(android: androidSettings));
-    await _plugin
-        .resolvePlatformSpecificImplementation
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestNotificationsPermission();
+    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    await _plugin.initialize(const InitializationSettings(android: androidSettings));
+
+    final androidPlugin = _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+    await androidPlugin?.requestNotificationsPermission();
 
     const timerChannel = AndroidNotificationChannel(
       'pomodoro_timer',
@@ -47,18 +39,16 @@ class NotificationService {
     );
 
     final alarmChannel = AndroidNotificationChannel(
-      'pomodoro_alarm',
+      'pomodoro_alarm_v2',
       'Alarme Pomodoro',
       description: 'Alarme quando o timer termina',
       importance: Importance.high,
       playSound: true,
+      sound: const RawResourceAndroidNotificationSound('timer_alarm'),
       enableVibration: true,
       vibrationPattern: Int64List.fromList([0, 500, 200, 500]),
     );
 
-    final androidPlugin = _plugin
-        .resolvePlatformSpecificImplementation
-            AndroidFlutterLocalNotificationsPlugin>();
     await androidPlugin?.createNotificationChannel(timerChannel);
     await androidPlugin?.createNotificationChannel(alarmChannel);
   }
@@ -84,18 +74,18 @@ class NotificationService {
       enableVibration: false,
       color: color,
     );
-    await _plugin.show(1, modeName, 'Mantendo o foco 🍅',
-        NotificationDetails(android: details));
+    await _plugin.show(1, modeName, 'Mantendo o foco 🍅', NotificationDetails(android: details));
   }
 
   Future<void> showTimerComplete(String modeName) async {
     final vibrationPattern = Int64List.fromList([0, 500, 200, 500]);
     final details = AndroidNotificationDetails(
-      'pomodoro_alarm',
+      'pomodoro_alarm_v2',
       'Alarme Pomodoro',
       importance: Importance.high,
       priority: Priority.high,
       playSound: true,
+      sound: const RawResourceAndroidNotificationSound('timer_alarm'),
       enableVibration: true,
       vibrationPattern: vibrationPattern,
       fullScreenIntent: true,
@@ -111,8 +101,6 @@ class NotificationService {
 
   Future<void> cancelTimer() => _plugin.cancel(1);
 }
-
-// ─── THEMES ───────────────────────────────────────────────────────────────────
 
 class AppTheme {
   final String id, name, emoji;
@@ -184,8 +172,6 @@ final List<AppTheme> appThemes = [
       textSecondary: Color(0xFF7AAABB), isPremium: true),
 ];
 
-// ─── AD MANAGER ───────────────────────────────────────────────────────────────
-
 class AdManager {
   BannerAd? _bannerAd;
   bool _bannerLoaded = false;
@@ -230,8 +216,6 @@ class AdManager {
 
   void dispose() { _bannerAd?.dispose(); _rewardedAd?.dispose(); }
 }
-
-// ─── STATE ────────────────────────────────────────────────────────────────────
 
 enum TimerMode { pomodoro, shortBreak, longBreak }
 
@@ -302,7 +286,7 @@ class PomodoroState extends ChangeNotifier {
         if (_secondsLeft > 0) {
           _secondsLeft--;
           notifyListeners();
-        } else {
+        } else if (_isRunning) {
           _timer?.cancel();
           _isRunning = false;
           if (_mode == TimerMode.pomodoro) _completedPomodoros++;
@@ -356,8 +340,6 @@ class PomodoroState extends ChangeNotifier {
   }
 }
 
-// ─── APP ROOT ─────────────────────────────────────────────────────────────────
-
 class PomodoroApp extends StatefulWidget {
   const PomodoroApp({super.key});
   @override
@@ -396,8 +378,6 @@ class _PomodoroAppState extends State<PomodoroApp> {
     );
   }
 }
-
-// ─── HOME SCREEN ──────────────────────────────────────────────────────────────
 
 class HomeScreen extends StatelessWidget {
   final PomodoroState state;
@@ -545,8 +525,6 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-// ─── TIMER RING ───────────────────────────────────────────────────────────────
-
 class _TimerRing extends StatelessWidget {
   final PomodoroState state;
   const _TimerRing({required this.state});
@@ -579,8 +557,6 @@ class _TimerRing extends StatelessWidget {
   }
 }
 
-// ─── PLAY BUTTON ──────────────────────────────────────────────────────────────
-
 class _PlayButton extends StatelessWidget {
   final PomodoroState state;
   const _PlayButton({required this.state});
@@ -606,8 +582,6 @@ class _PlayButton extends StatelessWidget {
   }
 }
 
-// ─── STAT CHIP ────────────────────────────────────────────────────────────────
-
 class _StatChip extends StatelessWidget {
   final String label, icon;
   final AppTheme theme;
@@ -621,8 +595,6 @@ class _StatChip extends StatelessWidget {
     );
   }
 }
-
-// ─── SETTINGS SHEET ───────────────────────────────────────────────────────────
 
 class SettingsSheet extends StatefulWidget {
   final PomodoroState state;
@@ -714,8 +686,6 @@ class _DurationSlider extends StatelessWidget {
     ]);
   }
 }
-
-// ─── THEME SHEET ──────────────────────────────────────────────────────────────
 
 class ThemeSheet extends StatelessWidget {
   final PomodoroState state;
