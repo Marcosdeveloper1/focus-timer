@@ -1,3 +1,4 @@
 -keep class io.flutter.** { *; }
 -keep class com.fala.geek.focustimer.** { *; }
+-keep class com.google.android.gms.** { *; }
 -dontwarn io.flutter.**
