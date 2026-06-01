@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -32,10 +33,11 @@ class NotificationService {
     await _plugin
         .initialize(const InitializationSettings(android: androidSettings));
     await _plugin
-        .resolvePlatformSpecificImplementation<
+        .resolvePlatformSpecificImplementation
             AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
-    const channel = AndroidNotificationChannel(
+
+    const timerChannel = AndroidNotificationChannel(
       'pomodoro_timer',
       'Pomodoro Timer',
       description: 'Notificações do timer',
@@ -43,10 +45,22 @@ class NotificationService {
       playSound: false,
       enableVibration: false,
     );
-    await _plugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
+
+    final alarmChannel = AndroidNotificationChannel(
+      'pomodoro_alarm',
+      'Alarme Pomodoro',
+      description: 'Alarme quando o timer termina',
+      importance: Importance.high,
+      playSound: true,
+      enableVibration: true,
+      vibrationPattern: Int64List.fromList([0, 500, 200, 500]),
+    );
+
+    final androidPlugin = _plugin
+        .resolvePlatformSpecificImplementation
+            AndroidFlutterLocalNotificationsPlugin>();
+    await androidPlugin?.createNotificationChannel(timerChannel);
+    await androidPlugin?.createNotificationChannel(alarmChannel);
   }
 
   Future<void> showTimerRunning({
@@ -75,18 +89,23 @@ class NotificationService {
   }
 
   Future<void> showTimerComplete(String modeName) async {
-    const details = AndroidNotificationDetails(
-      'pomodoro_timer',
-      'Pomodoro Timer',
+    final vibrationPattern = Int64List.fromList([0, 500, 200, 500]);
+    final details = AndroidNotificationDetails(
+      'pomodoro_alarm',
+      'Alarme Pomodoro',
       importance: Importance.high,
       priority: Priority.high,
+      playSound: true,
+      enableVibration: true,
+      vibrationPattern: vibrationPattern,
+      fullScreenIntent: true,
     );
     final isFocus = modeName.contains('Foco');
     await _plugin.show(
       2,
       '⏰ $modeName concluído!',
       isFocus ? 'Hora de descansar 🎉' : 'Hora de focar! 💪',
-      const NotificationDetails(android: details),
+      NotificationDetails(android: details),
     );
   }
 
@@ -289,6 +308,7 @@ class PomodoroState extends ChangeNotifier {
           if (_mode == TimerMode.pomodoro) _completedPomodoros++;
           NotificationService.instance.cancelTimer();
           NotificationService.instance.showTimerComplete(modeLabel);
+          HapticFeedback.heavyImpact();
           notifyListeners();
         }
       });
