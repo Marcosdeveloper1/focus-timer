@@ -14,7 +14,7 @@ if (keyPropertiesFile.exists()) {
 }
 
 android {
-    namespace = "c"
+    namespace = "com.fala.geek.focustimer"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -50,10 +50,10 @@ android {
             signingConfig = signingConfigs.getByName("release")
         }
     }
+}
 
-    flutter {
-        source = "../.."
-    }
+flutter {
+    source = "../.."
 }
 
 dependencies {
